@@ -1,0 +1,9 @@
+# compiled python modules
+*.pyc
+
+# setuptool distribution folder
+/dist/
+
+.DS_Store
+/*.egg-info
+/*.egg
