@@ -1,18 +1,52 @@
-# Picture environment recognition tool
+# Image environment recognition tool
+
+
 
 ## Description
 
 This repository is a collection of landscape recognition tools. There are:
 
-- horizon detection
-- sun location
-- daytime detection
-- clouds detection
+- horizon detection (version 0.0.1)
+- sun location (version 0.0.1)
+- daytime detection (version 0.0.1)
+- clouds detection (currently in implementation)
 - whether/flow detection
+
+
 
 ## Installation and usage
 
-dark flag
+Python 2.7 considered to be installed before start.
+
+To install the package use [pip](http://www.pip-installer.org/).
+
+```
+$ pip install image-recognition-tool
+```
+
+Or download the repository. 
+
+It is recommended to use virtual environment but it's not necessary.
+
+To install dependencies
+
+```
+$ pip install -r requirements.txt
+```
+
+For usage run 
+
+```
+$ python -i /path/to/file/file_name.png
+```
+
+Either `-i` or  `--image` comman line arguments allowed.
+
+**Note:** only *.png images are alowed supported.
+
+For the development purpose or output information (as sun spot position and horizon lines) files `sun.py` and `horizon.py` may be used separately.
+
+
 
 ## Horizon Detection
 
@@ -32,7 +66,7 @@ This program uses a combination of the 2 last approaches: segmentation and edge 
 
 The core assumption of light segmentation is to define sky as a "ligh" segment and ground as a "dark" segment. To segmentize an image uses [Otsu Binarization](https://docs.opencv.org/3.4.0/d7/d4d/tutorial_py_thresholding.html). This is an adaptive thresholding method which uses as arbitary number some approximately value between 2 peaks on histogram of bimodal image.
 
-![](/Users/Helen/Downloads/horizon_doc_1.png)
+![](/https://drive.google.com/open?id=1om_0ySTqw1JapcLblRb26sGm6-dKTC9d)
 
 After some [Morphological processing](https://docs.opencv.org/trunk/d9/d61/tutorial_py_morphological_ops.html) with Erosion and Dilation methods typically the image has 2 solid determined lighting zones. Eventually, a part of the ligh segment contour is a horizon line.
 
@@ -302,17 +336,19 @@ Otherwise, this approach will filter those pictures where sun is somewhere insid
 
 
 
-## Flows detection
+## Daytime check
 
-Flow detection is a computer vision meteorological problem to recognize if any flow (rain, snow etc.) presented on picture. 
+In general daytime recognition is a deep problem of detecting possible time when the picture is taken.
 
-This could be interpreted as a problem of removing image background and moving objects analysis. Which is possible to detect only for video or picture sequence
+This could be accurately realized as ML program using big amount of pictures for any possible time/light/landscape.
 
-
-
-  
+Besides, in this repository used the simplest possible mehod for time check. It based on assumption of good lghtining conditions. Daytime recognized in accordance to the chosen by Otsu threshold algorithm parameter. Moreover, the parameters are not accurate and chosen experimentally. 
 
 
+
+## License
+
+This repository uses the [MIT License](https://github.com/exercism/python/blob/master/LICENSE).
 
 
 
