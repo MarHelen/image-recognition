@@ -72,7 +72,7 @@ The core assumption of light segmentation is to define sky as a "ligh" segment a
 
 After some [Morphological processing](https://docs.opencv.org/trunk/d9/d61/tutorial_py_morphological_ops.html) with Erosion and Dilation methods typically the image has 2 solid determined lighting zones. Eventually, a part of the ligh segment contour is a horizon line.
 
-![](/Users/Helen/Downloads/horizon_doc_3.png)
+![](https://github.com/MarHelen/image-recognition/blob/master/ducumentation_images/horizon_doc_3.png)
 
 
 
@@ -80,7 +80,7 @@ A bottleneck of this approach is unknowing information about processing image. M
 
 Edge detection methods uses as a second tier to improve algorithm accurancy . The idea of this method to determine edges on the image according to contrast changes. [Canny Edge detection](https://docs.opencv.org/3.4.1/da/d22/tutorial_py_canny.html) is one of the most known method in this area. The method output is binary image of found edges.
 
-![](/Users/Helen/Downloads/horizon_doc_5.png)
+![](https://github.com/MarHelen/image-recognition/blob/master/ducumentation_images/horizon_doc_5.png)
 
 Then [Hough Line transform](https://docs.opencv.org/2.4/doc/tutorials/imgproc/imgtrans/hough_lines/hough_lines.html) uses to determine lines on the edge image.
 
@@ -90,7 +90,7 @@ Then [Hough Line transform](https://docs.opencv.org/2.4/doc/tutorials/imgproc/im
 
 The final step is to choose the most relevant lines as horizon assumption and add all missing lines to complete whole horizon line.
 
-![Filtered lines](/Users/Helen/Downloads/horizon_doc_7.png) 
+![Filtered lines](https://github.com/MarHelen/image-recognition/blob/master/ducumentation_images/horizon_doc_7.png) 
 
 
 
@@ -108,7 +108,7 @@ Edge detecting algorithms are highly noise-sensative. Resizing helps to reduce u
 
 `canny = cv2.Canny(img,30,150)`
 
-![](/Users/Helen/Downloads/horizon_doc_9.png)
+![](https://github.com/MarHelen/image-recognition/blob/master/ducumentation_images/horizon_doc_9.png)
 
 Another important transformation step is smoothing the image. This step is highly valuable before edge detecting procedures. The main reason is noise reducing, however, not the only one.  Commonly to use linear filters, in which processig pixel recalculates as weighted sum of some input pixels values (mask or kernel)
 
@@ -134,7 +134,7 @@ Sometimes input images could have different light or visibility condition and so
 
 `equ = cv2.equalizeHist(img)`
 
-![](/Users/Helen/Downloads/horizon_doc_10.png)
+![](https://github.com/MarHelen/image-recognition/blob/master/ducumentation_images/horizon_doc_10.png)
 
 `#create a CLAHE object (Arguments are optional).`
 
@@ -142,7 +142,7 @@ Sometimes input images could have different light or visibility condition and so
 
 `cl1 = clahe.apply(img)`
 
-![](/Users/Helen/Downloads/horizon_doc_11.png)
+![](https://github.com/MarHelen/image-recognition/blob/master/ducumentation_images/horizon_doc_11.png)
 
 Unfornutunately, it's not always working for good in image processing, so this step is optional and depends on a type of images.
 
@@ -170,22 +170,22 @@ There are 2 types of "smoothing" binary images: reduce white and reduce black. T
 
 The pair Erode-Dilate uses more "agressive" strategy and extends color segment.
 
-![](/Users/Helen/Downloads/horizon_doc_12.png)
+![](https://github.com/MarHelen/image-recognition/blob/master/ducumentation_images/horizon_doc_12.png)
 
 Otherwise Opening-Closing just reduces the noise.
 
-![](/Users/Helen/Downloads/horizon_doc_13.png)
+![](https://github.com/MarHelen/image-recognition/blob/master/ducumentation_images/horizon_doc_13.png)
 
 Basically, Erode and Dilate methods are more useful in case of segmentation.
 
 `erode = cv2.erode(binary_img, kernel, iterations=4)`
 `dilate = cv2.dilate(erode, kernel, iterations=3)` 
 
-![](/Users/Helen/Downloads/horizon_doc_14.png)
+![](https://github.com/MarHelen/image-recognition/blob/master/ducumentation_images/horizon_doc_14.png)
 
 But it's still not always useful for horizon problem. There some cases where sky part is darker or ground part is not dark enough or if the ground part is missing at all.
 
-![](/Users/Helen/Downloads/horizon_doc_15.png)
+![](https://github.com/MarHelen/image-recognition/blob/master/ducumentation_images/horizon_doc_15.png)
 
 
 
@@ -203,7 +203,7 @@ The other way to extract contour is manual. There are some props and cons of thi
 
 But it's quite useful for this problem. Because of uneven segment contour, it is much harder to extract appropriate points from **cv2.findContours()** output. This is why the enforced way to operate with image from top to bottom and extract edge points from the top of dark segment. And then filter them as one contour line. Which is still quite uneffective.
 
-![](/Users/Helen/Downloads/horizon_doc_16.png)
+![](https://github.com/MarHelen/image-recognition/blob/master/ducumentation_images/horizon_doc_16.png)
 
 #### Edge and line detection
 
@@ -235,7 +235,7 @@ But sometimes this approach filters much more than needed for low contrast image
 
 `canny = cv2.Canny(gray,30,150)`
 
-![](/Users/Helen/Downloads/horizon_doc_18.png)
+![](https://github.com/MarHelen/image-recognition/blob/master/ducumentation_images/horizon_doc_18.png)
 
 
 
@@ -251,7 +251,7 @@ HoughLinesP() returns unsorted array of line segments represented as 2 points. W
 
 In best cases Hough transform returns easy to process result, but more often it doesn't.
 
-![](/Users/Helen/Downloads/horizon_doc_20.png)
+![](https://github.com/MarHelen/image-recognition/blob/master/ducumentation_images/horizon_doc_20.png)
 
 
 
@@ -263,17 +263,17 @@ There could be a lot of different approaches to filter lines. Especially, when a
 
 In this repository used a simple filtering based on threshold contour and angles and it is not always accurate, so this is open question for improvements.
 
-![Edge detection](/Users/Helen/Downloads/horizon_doc_21.png)
+![Edge detection](https://github.com/MarHelen/image-recognition/blob/master/ducumentation_images/horizon_doc_21.png)
 
-![Thresholding](/Users/Helen/Downloads/horizon_doc_22.png)
+![Thresholding](https://github.com/MarHelen/image-recognition/blob/master/ducumentation_images/horizon_doc_22.png)
 
-![](/Users/Helen/Downloads/horizon_doc_23.png)
+![](https://github.com/MarHelen/image-recognition/blob/master/ducumentation_images/horizon_doc_23.png)
 
 
 
 Looking at this example, it might be unclear why even use editional method if threshold works better. This is probably the truth for a lot of contrasted pictures with good visability. But it's not that useful for unevenly divided or with no ground part at all and many other pictures. That's why it's always better to have some additional approach just to make sure it works.
 
-![](/Users/Helen/Downloads/horizon_doc_24.png) 
+![](https://github.com/MarHelen/image-recognition/blob/master/ducumentation_images/horizon_doc_24.png) 
 
 ## Sun Location
 
@@ -300,17 +300,17 @@ To detect the most brightest zone uses Threshold methods
 
 The assumption here to define sun in (250, 255) bright zone, which is optional and probably can wary. This helps to exclude from further steps pictures with worse lighting condidions.
 
-![](/Users/Helen/Downloads/sun_doc_1.png)
+![](https://github.com/MarHelen/image-recognition/blob/master/ducumentation_images/sun_doc_1.png)
 
 And vise versa, to emphasize those pictures where sun position is more obvious.
 
-![](/Users/Helen/Downloads/sun_doc_2.png)
+![](https://github.com/MarHelen/image-recognition/blob/master/ducumentation_images/sun_doc_2.png)
 
 As long as sun sun location essentially above ground, next step is thresholding dark zone with lower threshold value (200) to leave some more space for circle detection method.
 
 `thresh_2 = cv2.threshold(gray, 200, 255, cv2.THRESH_TOZERO)[1]`
 
-![](/Users/Helen/Downloads/sun_doc_3.png)
+![](https://github.com/MarHelen/image-recognition/blob/master/ducumentation_images/sun_doc_3.png)
 
 
 
@@ -322,19 +322,19 @@ Unfortunately, radius search usually less accurate, but center detection works m
 
 Despite on noise filtering, a lot of unwanted circles are being detected anyway.
 
-![](/Users/Helen/Downloads/sun_doc_4.png)
+![](https://github.com/MarHelen/image-recognition/blob/master/ducumentation_images/sun_doc_4.png)
 
 And more often small circles left undetected.
 
-![](/Users/Helen/Downloads/sun_doc_8.png)
+![](https://github.com/MarHelen/image-recognition/blob/master/ducumentation_images/sun_doc_8.png)
 
 One of the possible solution filtering is to check if most of (250,255) thresholded area is inside of observing circle. Because if consider circle is somewhere around the sun it suppose to include the whole sun zone. 
 
-![](/Users/Helen/Downloads/sun_doc_6.png)
+![](https://github.com/MarHelen/image-recognition/blob/master/ducumentation_images/sun_doc_6.png)
 
 Otherwise, this approach will filter those pictures where sun is somewhere inside big bright zone
 
-![](/Users/Helen/Downloads/sun_doc_7.png)
+![](https://github.com/MarHelen/image-recognition/blob/master/ducumentation_images/sun_doc_7.png)
 
 
 
