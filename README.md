@@ -66,7 +66,9 @@ This program uses a combination of the 2 last approaches: segmentation and edge 
 
 The core assumption of light segmentation is to define sky as a "ligh" segment and ground as a "dark" segment. To segmentize an image uses [Otsu Binarization](https://docs.opencv.org/3.4.0/d7/d4d/tutorial_py_thresholding.html). This is an adaptive thresholding method which uses as arbitary number some approximately value between 2 peaks on histogram of bimodal image.
 
-![](/https://drive.google.com/open?id=1om_0ySTqw1JapcLblRb26sGm6-dKTC9d)
+![](https://github.com/MarHelen/image-recognition/blob/master/ducumentation_images/horizon_doc_1.png)
+
+
 
 After some [Morphological processing](https://docs.opencv.org/trunk/d9/d61/tutorial_py_morphological_ops.html) with Erosion and Dilation methods typically the image has 2 solid determined lighting zones. Eventually, a part of the ligh segment contour is a horizon line.
 
