@@ -17,6 +17,9 @@ def calc_angle(first, second):
     if second[0] == first[0]:
         return np.pi/2 if second[1] > first[1] else -np.pi/2
 
+    if second[1] == first[1]:
+        return 0
+
     tg = float(second[1]-first[1])/(second[0]-first[0])
 
     return np.arctan(tg)
@@ -38,10 +41,13 @@ def draw_lines(img, lines, scale):
         # calculate angle changes between first 2 points
         # and find start y in accordance to this angle
         angle = calc_angle(lines[0], lines[-1])
-        check_pos(lines[0][1], img.shape[0], scale)
-        start_y = int(check_pos(lines[0][1], img.shape[0], scale) -
-                      check_pos(lines[0][0], img.shape[1], scale) *
-                      np.tan(angle))
+        # check_pos(lines[0][1], img.shape[0], scale)
+        if abs(angle) < np.pi/180:
+            start_y = check_pos(lines[0][1], img.shape[0], scale)
+        else:
+            start_y = int(check_pos(lines[0][1], img.shape[0], scale) -
+                          check_pos(lines[0][0], img.shape[1], scale) *
+                          np.tan(angle))
         start = (0, start_y)
 
         for line in lines:
@@ -66,7 +72,7 @@ def draw_lines(img, lines, scale):
         y_last = (start[1] - y_first) * img.shape[1] / start[0] + y_first
         x_last = img.shape[1] - 1
 
-        cv2.line(img, start, (x_last, y_last), (0, 255, 0), 6)
+        cv2.line(img, start, (x_last, y_last), (0, 255, 0), 5)
 
     return img
 
@@ -177,19 +183,19 @@ def hybrid_find_y_average(horizont, x, point, i, n, delta):
     return also current index and last observed point
     """
     avg = 0
-    m = i + 20
+    m = i + 15
     summ = point[1]
     count = 1
     first_point = point
-    while x > point[0] and i < min(n-1, m):
+
+    while (x > point[0] and i < n-1) or i < min(n-1, m):
         current_point = horizont[i]
         summ += current_point[1]
         count += 1
         point = horizont[i]
         i += 1
 
-    x_delta = 1 if point[0] == first_point[0] else point[0] - first_point[0]
-    avg_angle = np.arctan(float(point[1] - first_point[1]) / x_delta)
+    avg_angle = calc_angle(first_point, point)
     avg = summ / count
 
     return i, avg, avg_angle, point
@@ -200,44 +206,51 @@ def line_bright_check(img, x, y):
     check if the line divide image on contrast zones with more intensive above
     and less intensive below
     """
-    if (y-2 > 0 and y+2 < img.shape[0]) and img[y-2][x] + 30 > img[y+2][x] \
-       and img[y-1][x] + 30 > img[y+1][x]:
+    if (y-2 > 0 and y+2 < img.shape[0]) and img[y-2][x] > img[y+2][x] + 30  \
+       and img[y-1][x] > img[y+1][x] + 30:
         return 1
     else:
         return 0
 
 
 def hybrid_add_line_check(lines, x, y, x2, y2, avg,
-                          avg_angle, gray_image, delta):
+                          avg_angle, image, delta):
     """
     check if next line in delta coridor around thresh horizont line
-    check if next line start after previous
+    check if next line start after previous+3
     add observing line only if it's start point is (y_delta/2)
     close to prev added end point by Y
     """
-    len_delta = gray_image.shape[1] * 0.03
+    # print 'x,y', x, y, 
+    len_delta = image.shape[1] * 0.03
+
+    if x2 - x < 3:
+        return 0
+
+    if (abs(avg - y) > 1.5 * delta) and not lines:
+        return 0
 
     if lines:
-        angle = calc_angle(lines[-1], (x, y))
+        # print lines[-1]
+        angle = calc_angle(lines[-min(5, len(lines))], (x, y))
+
         if abs(angle - avg_angle) > np.pi/30:
             return 0
 
-    if (avg - y > delta) and not lines:
-        return 0
+        if x < lines[-1][2] + 3:
+            return 0
 
-    if lines and abs(y - lines[-1][3]) > delta:
-        return 0
+        if abs(y - lines[-1][3]) > delta:
+            return 0
 
-    if lines and abs(y - lines[-1][3]) > delta / 2 and x2 - x < len_delta:
-        return 0
-
-    if lines and x < lines[-1][2] + 3:
-        return 0
-
+        if abs(y - lines[-1][3]) > (delta / 2) and (x2 - x) < len_delta:
+            return 0
+    # print lines
     return 1
 
 
-def hybrid_replace_line_check(lines, x, y, x2, y2, avg, avg_angle, image):
+def hybrid_replace_line_check(lines, x, y, x2, y2, avg,
+	                          avg_angle, image):
     """
     if new observing point is closer to avg
     and it's start X less than added point end X
@@ -246,17 +259,20 @@ def hybrid_replace_line_check(lines, x, y, x2, y2, avg, avg_angle, image):
     delta = 0.05 * image.shape[0]
     if not lines:
         return 0
+    if abs(y-avg) > 1.5 * delta:
+        return 0
 
     last_x1, last_x2 = lines[-1][0], lines[-1][2]
     last_y1, last_y2 = lines[-1][1], lines[-1][3]
 
-    if y <= last_y1 and x2-x > 2 * (last_x2-last_x1):
+    if x < last_x2 and x2-x > 2 * (last_x2-last_x1):
         return 1
-
+    print lines[-1], x,y,x2,y2
     if len(lines) > 1:
-        prev_x1, prev_x2 = lines[-2][0], lines[-2][2]
-        prev_y1, prev_y2 = lines[-2][1], lines[-2][3]
-        if 2 * abs(y - prev_y1) < abs(last_y1 - prev_y1):
+    	if hybrid_add_line_check(lines[:-1], x, y, x2, y2, avg, avg_angle, image, delta):
+        # prev_x1, prev_x2 = lines[-2][0], lines[-2][2]
+        # prev_y1, prev_y2 = lines[-2][1], lines[-2][3]
+        # if 2 * abs(y - prev_y1) < abs(last_y1 - prev_y1):
             return 1
 
     if abs(y - avg) > abs(lines[-1][1] - avg):
@@ -304,9 +320,8 @@ def hybride_build(horizon, im_shape, Hough_lines, img):
 
                     avg = avg if avg > 0 else edge_point[1]
 
-                if y < (avg + y_delta) and y2 < (avg + y_delta) and \
-                    line_bright_check(img, x, y) and \
-                        line_bright_check(img, x2, y2):
+                if line_bright_check(img, x, y) and \
+                   line_bright_check(img, x2, y2):
 
                     if hybrid_add_line_check(horizon_lines, x, y, x2, y2,
                                              avg, avg_angle, img, y_delta):
@@ -428,6 +443,7 @@ def horizon_detection(img):
 
         hybride = hybride_build(horizon_thresh, img.shape, hough_lines, img)
 
-    result = (hybride, 1) if hybride else (horizon_thresh, 0)
+    result = (hybride, 1) if (hybride and len(hybride) > 3)  else (horizon_thresh, 0)
+    print result
 
     return result, daytime

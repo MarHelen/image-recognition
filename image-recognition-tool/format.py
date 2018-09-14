@@ -120,7 +120,6 @@ def save_results(image_name, image, image_horizon, image_sun,
             image_add = put_text(item[0], item[1])
             res_img = np.concatenate((res_img, image_add), axis=0)
 
-    # resized = cv2.resize(res_img,(0, 0), None, 0.25, 0.25)
     # plt.imshow(imutils.opencv2matplotlib(res_img))
     cv2.imwrite(png_filename, res_img)
 

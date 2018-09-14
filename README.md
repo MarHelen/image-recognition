@@ -18,13 +18,7 @@ This repository is a collection of landscape recognition tools. There are:
 
 Python 2.7 considered to be installed before start.
 
-To install the package use [pip](http://www.pip-installer.org/).
-
-```
-$ pip install image-recognition-tool
-```
-
-Or download the repository. 
+To install the package download the repository. 
 
 It is recommended to use virtual environment but it's not necessary.
 
